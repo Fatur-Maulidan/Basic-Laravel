@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
+    public function index()
+    {
+        return response()->json([
+            'message' => 'Get Data Success',
+            'response' => 200,
+            'data' => AuthModel::all()
+        ]);
+    }
     public function auth(Request $request)
     {
         $auth = new RegisterStorePostRequest();
@@ -20,7 +28,7 @@ class LoginController extends Controller
 
         $validator = Validator::make(
             $request->all(),
-            $auth::rules(),
+            $auth::loginRules(),
             $auth::message()
         );
 
@@ -31,28 +39,28 @@ class LoginController extends Controller
                 'response' => 422
             ]);
         }
+        if ($user) {
+            return $this->checkIfPasswordIsValid($user, $request);
+        } else {
+            return response()->json([
+                'message' => 'Username tidak ditemukan',
+                'response' => 422
+            ]);
+        }
 
-        $this->checkIfPasswordIsValid($user, $request);
     }
 
     private function checkIfPasswordIsValid($user, $request)
     {
-        if ($user) {
-            if (Hash::check($request->input('password'), $user->password)) {
-                return response()->json([
-                    'message' => 'Login successful',
-                    'response' => 200,
-                    'data' => $user
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Password Salah coba lagi',
-                    'response' => 422
-                ]);
-            }
+        if (Hash::check($request->input('password'), $user->password)) {
+            return response()->json([
+                'message' => 'Login successful',
+                'response' => 200,
+                'data' => $user
+            ]);
         } else {
             return response()->json([
-                'message' => 'Username tidak ditemukan',
+                'message' => 'Password Salah coba lagi',
                 'response' => 422
             ]);
         }

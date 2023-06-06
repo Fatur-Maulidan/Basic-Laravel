@@ -15,19 +15,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::prefix('api', function () {
-//     Route::prefix('auth', function () {
-Route::post(
-    'register',
-    [RegisterController::class, 'store']
-)->name('registerData');
+Route::prefix('api')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post(
+            'register',
+            [RegisterController::class, 'store']
+        )->name('registerData');
 
-Route::post(
-    '/',
-    [LoginController::class, 'auth']
-)->name('loginAuth');
-//     });
-// });
+        Route::post(
+            'login',
+            [LoginController::class, 'auth']
+        )->name('loginAuth');
+
+        Route::get('csrf-token', function () {
+            return response()->json(['csrf_token' => csrf_token()]);
+        });
+    });
+
+    Route::get('/user', [LoginController::class, 'index'])->name('dataListUser')->middleware('auth');
+});
+
 
 Route::get('/', function () {
     return "hello world";
