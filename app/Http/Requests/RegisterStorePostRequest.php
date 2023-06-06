@@ -19,7 +19,7 @@ class RegisterStorePostRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public static function rules(): array
+    public static function registerRules(): array
     {
         return [
             'username' => 'required|unique:auth|alpha|min:3',
@@ -27,11 +27,19 @@ class RegisterStorePostRequest extends FormRequest
         ];
     }
 
+    public static function loginRules(): array
+    {
+        return [
+            'username' => 'required|alpha|min:3',
+            'password' => 'required|alpha_num|min:8'
+        ];
+    }
+
     public static function message(): array
     {
         return [
-            'username.required' => 'The username field is required.',
-            'password.required' => 'The password field is required.'
+            'username.required' => 'Field username harus diisi.',
+            'password.required' => 'Field password harus diisi.'
         ];
     }
 }

@@ -4,19 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterStorePostRequest;
 use App\Models\AuthModel;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    protected $auth;
+    public function __construct()
+    {
+        $this->auth = new RegisterStorePostRequest;
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make(
             $request->all(),
-            RegisterStorePostRequest::rules(),
-            RegisterStorePostRequest::message()
+            $this->auth::registerRules(),
+            $this->auth::message()
         );
 
         if ($validator->fails()) {
