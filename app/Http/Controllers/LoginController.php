@@ -80,13 +80,33 @@ class LoginController extends Controller
         }
     }
 
-    private function authToken()
-    {
-        return TokenModel::find('token', session()->get('token'))->first();
-    }
-
     private function getDataFromToken()
     {
         return AuthModel::find($this->authToken()->id)->first();
+    }
+
+    public function logout()
+    {
+        $data = json_decode(
+            str_replace(
+                'Bearer ',
+                '',
+                session()->get(
+                    'token'
+                )
+            ),
+            true
+        );
+        if (
+            TokenModel::where('id', $data['id'])
+                ->update(['status' => 1])
+        ) {
+            return response()->json([
+                'message' => 'Logout Success',
+                'response' => 200
+            ]);
+        }
+        ;
+        session()->forget('token');
     }
 }

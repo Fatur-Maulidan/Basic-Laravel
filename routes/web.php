@@ -27,10 +27,9 @@ Route::prefix('api')->group(function () {
             [LoginController::class, 'auth']
         )->name('loginAuth');
 
-        Route::post(
-            'logout',
-            [LoginController::class, 'logout']
-        )->name('logoutAuth');
+        Route::post('logout', [LoginController::class, 'logout'])
+            ->name('logoutAuth')
+            ->middleware('token.auth');
 
         Route::get('csrf-token', function () {
             return response()->json(['csrf_token' => csrf_token()]);
