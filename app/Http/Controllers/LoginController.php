@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterStorePostRequest;
 use App\Models\AuthModel;
+use App\Models\TokenModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return response()->json([
             'message' => 'Get Data Success',
@@ -47,16 +49,28 @@ class LoginController extends Controller
                 'response' => 422
             ]);
         }
-
     }
 
     private function checkIfPasswordIsValid($user, $request)
     {
         if (Hash::check($request->input('password'), $user->password)) {
+            $token = TokenModel::where('id', $user->id)
+                ->where('status', 0)->first();
+            if ($token == null) {
+                $token = new TokenModel([
+                    'id' => $user->id,
+                    'token' => Str::random(60),
+                    'status' => 0
+                ]);
+                $token->save();
+            }
+            session()->put('token', 'Bearer ' . $token);
+
             return response()->json([
                 'message' => 'Login successful',
                 'response' => 200,
-                'data' => $user
+                'data' => $user,
+                'token' => $token
             ]);
         } else {
             return response()->json([
@@ -64,5 +78,15 @@ class LoginController extends Controller
                 'response' => 422
             ]);
         }
+    }
+
+    private function authToken()
+    {
+        return TokenModel::find('token', session()->get('token'))->first();
+    }
+
+    private function getDataFromToken()
+    {
+        return AuthModel::find($this->authToken()->id)->first();
     }
 }

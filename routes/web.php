@@ -20,19 +20,27 @@ Route::prefix('api')->group(function () {
         Route::post(
             'register',
             [RegisterController::class, 'store']
-        )->name('registerData');
+        )->name('registerAuth');
 
         Route::post(
             'login',
             [LoginController::class, 'auth']
         )->name('loginAuth');
 
+        Route::post(
+            'logout',
+            [LoginController::class, 'logout']
+        )->name('logoutAuth');
+
         Route::get('csrf-token', function () {
             return response()->json(['csrf_token' => csrf_token()]);
         });
     });
 
-    Route::get('/user', [LoginController::class, 'index'])->name('dataListUser')->middleware('auth');
+    Route::get('/user', [LoginController::class, 'index'])
+        ->middleware('token.auth')
+        ->name('dataListUser');
+
 });
 
 

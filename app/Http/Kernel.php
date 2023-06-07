@@ -47,6 +47,7 @@ class Kernel extends HttpKernel
 
     protected $routeMiddleware = [
         'csrf' => \App\Http\Middleware\CustomCsrfMiddleware::class,
+        'token.auth' => \App\Http\Middleware\ApiAuthenticationToken::class,
     ];
 
     /**
