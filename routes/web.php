@@ -46,7 +46,7 @@ Route::prefix('api')->group(function () {
             ->name('insertDataMahasiswa')
             ->middleware('token.auth');
 
-        Route::post('search/{id}', [MahasiswaController::class, 'search'])
+        Route::post('search/{nim}', [MahasiswaController::class, 'search'])
             ->name('searchDataMahasiswa')
             ->middleware('token.auth');
     });
