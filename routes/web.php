@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,9 +37,20 @@ Route::prefix('api')->group(function () {
         });
     });
 
-    Route::get('/user', [LoginController::class, 'index'])
+    Route::get('user', [LoginController::class, 'index'])
         ->middleware('token.auth')
         ->name('dataListUser');
+
+    Route::prefix('mahasiswa')->group(function () {
+        Route::post('insert', [MahasiswaController::class, 'store'])
+            ->name('insertDataMahasiswa')
+            ->middleware('token.auth');
+
+        Route::post('search/{id}', [MahasiswaController::class, 'search'])
+            ->name('searchDataMahasiswa')
+            ->middleware('token.auth');
+    });
+
 
 });
 
@@ -46,7 +58,3 @@ Route::prefix('api')->group(function () {
 Route::get('/', function () {
     return "hello world";
 })->name('index');
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
